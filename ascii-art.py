@@ -3,15 +3,12 @@
 from PIL import Image
 from colorama import Fore, Back, Style, init
 import sys
+import os
 
 # resize to the size i want
-def resize_image(im):
-    if im.width>500 or im.height>500:
-        aspect_ratio = im.width / im.height
-        new_ht = 150
-        return im.resize((int(aspect_ratio * new_ht), new_ht))
-    else:
-        return im
+def resize_image(im, max_width, max_height):
+    im.thumbnail((max_width//3, max_height)) # divide by 3 -> we draw each pixel py 3 letter
+    return im
 
 # convert image to 2d matrix
 def get_image_matrix(im):
@@ -20,13 +17,18 @@ def get_image_matrix(im):
     return pixel_matrix
 
 # convert 2d image matrix to brightness matrix
-def get_intensity_matrix(pixel_matrix, method='average'):
+def get_intensity_matrix(pixel_matrix, method='average', invert=False):
     if method == 'average':
-        return [[ sum(pixel)//3 for pixel in row] for row in pixel_matrix]
-    if method == 'lightness':
-        return [[ (min(pixel)+max(pixel))//2 for pixel in row] for row in pixel_matrix]
-    if method == 'luminosity':
-        return [[ 0.21*pixel[0] + 0.72*pixel[1] + 0.07*pixel[2] for pixel in row] for row in pixel_matrix]
+        intensity_matrix = [[ sum(pixel)//3 for pixel in row] for row in pixel_matrix]
+    elif method == 'lightness':
+        intensity_matrix = [[ (min(pixel)+max(pixel))//2 for pixel in row] for row in pixel_matrix]
+    elif method == 'luminosity':
+        intensity_matrix = [[ 0.21*pixel[0] + 0.72*pixel[1] + 0.07*pixel[2] for pixel in row] for row in pixel_matrix]
+
+    if invert:
+        return [[ (255-pixel) for pixel in row ] for row in intensity_matrix]
+    else:
+        return intensity_matrix
 
 # characters in the increasing order of their brightness on the screen
 def get_mapped_char(intensity):
@@ -63,10 +65,21 @@ def display_ascii_image(ascii_image_matrix, fgcolor='white'):
     #    print()
 
 def main():
-    init()
+    # set up max size
+    if not(os.environ['LINES'] and os.environ['COLUMNS']):
+        # cannot get lines and columns, define default
+        print('export LINES and COLUMNS environment variables before running this script if possible,'+
+                'or else we use predefined default values')
+        columns = 680
+        lines = 105
+    else:
+        print('Got values from env, lines:', os.environ['LINES'], ' columns:', os.environ['COLUMNS'])
+        columns = int(os.environ['COLUMNS'])
+        lines = int(os.environ['LINES'])
+
     im = Image.open(sys.argv[1])
     print('Image successfully loaded.')
-    im = resize_image(im)
+    im = resize_image(im, columns, lines)
     print('Image size: {} x {} '.format(im.width, im.height))
 
     # processing
@@ -76,4 +89,5 @@ def main():
     display_ascii_image(ascii_mat, 'green')
 
 if __name__ == '__main__':
+    init() # initialize colorama
     main()
