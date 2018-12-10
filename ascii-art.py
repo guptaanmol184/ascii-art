@@ -2,7 +2,6 @@
 
 from PIL import Image
 from colorama import Fore, Back, Style, init
-import sys
 import os
 import argparse
 
