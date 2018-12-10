@@ -20,26 +20,17 @@ def get_image_matrix(im):
 
 # convert 2d image matrix to brightness matrix
 def get_intensity_matrix(pixel_matrix, method='average'):
-    intensity_matrix = []
     if method == 'average':
-        for i in range(len(pixel_matrix)):
-            intensity_row = []
-            for j in range(len(pixel_matrix[i])):
-                intensity_row.append(sum(pixel_matrix[i][j])//len(pixel_matrix[i][j]))
-            intensity_matrix.append(intensity_row)
-    return intensity_matrix
+        return [[sum(pixel)//len(pixel) for pixel in row] for row in pixel_matrix]
 
-def get_character_matrix(intensity_matrix):
+# characters in the increasing order of their brightness on the screen
+def get_mapped_char(intensity):
     b_string = "`^\",:;Il!i~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$"
-    ascii_matrix = []
-    for i in range(len(intensity_matrix)):
-        ascii_row = []
-        for j in range(len(intensity_matrix[i])):
-            mapped_char_index = (intensity_matrix[i][j]/256) * len(b_string)
-            ascii_row.append(b_string[int(mapped_char_index)])
-        ascii_matrix.append(ascii_row)
-    return ascii_matrix
+    return b_string[int((intensity/256)*len(b_string))]
 
+# returns the 2d matrix representing the ascii image
+def get_character_matrix(intensity_matrix):
+    return [[get_mapped_char(intensity_val) for intensity_val in row] for row in intensity_matrix ]
 
 im = Image.open(sys.argv[1])
 print('Image successfully loaded.')
