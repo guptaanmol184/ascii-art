@@ -64,15 +64,29 @@ def display_ascii_image(ascii_image_matrix, fgcolor='white'):
     #        print(char*3, end='')
     #    print()
 
-def display_rgb_ascii_image(ascii_image_matrix, pixel_matrix, tint=False):
+def display_rgb_ascii_image(ascii_image_matrix, pixel_matrix, tint=False, threshold=0.8):
     colorstr = ''
     color_opts = [ Fore.RED, Fore.GREEN, Fore.BLUE ]
 
     for char_row, pixel_row in zip(ascii_image_matrix, pixel_matrix):
         for char, pixel in zip(char_row, pixel_row):
-            max_index = pixel.index(max(pixel))
-            colorstr = color_opts[max_index]
-            print(colorstr, char*3, end='', sep='')
+            if tint:
+                pixel = list(pixel)
+                max_value = max(pixel)
+                max_index = pixel.index(max_value)
+                pixel.remove(max_value)
+                # we check is the average of the other pixel values
+                # is less than some threshold * max_pixel_value
+                # this means the max truly dominates even after thresholding
+                if sum(pixel)//2 < (threshold)*max_value:
+                    colorstr = color_opts[max_index]
+                else:
+                    colorstr = Style.RESET_ALL
+                print(colorstr, char*3, end='', sep='')
+            else:
+                max_index = pixel.index(max(pixel))
+                colorstr = color_opts[max_index]
+                print(colorstr, char*3, end='', sep='')
         print()
 
     # return terminal to normal state
@@ -101,7 +115,7 @@ def main():
     intensity_mat = get_intensity_matrix(im_mat, 'luminosity')
     ascii_mat = get_character_matrix(intensity_mat)
     #display_ascii_image(ascii_mat, 'green')
-    display_rgb_ascii_image(ascii_mat, im_mat)
+    display_rgb_ascii_image(ascii_mat, im_mat, False, 0.5)
 
 if __name__ == '__main__':
     init() # initialize colorama
