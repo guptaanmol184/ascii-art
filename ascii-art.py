@@ -21,7 +21,11 @@ def get_image_matrix(im):
 # convert 2d image matrix to brightness matrix
 def get_intensity_matrix(pixel_matrix, method='average'):
     if method == 'average':
-        return [[sum(pixel)//len(pixel) for pixel in row] for row in pixel_matrix]
+        return [[ sum(pixel)//3 for pixel in row] for row in pixel_matrix]
+    if method == 'lightness':
+        return [[ (min(pixel)+max(pixel))//2 for pixel in row] for row in pixel_matrix]
+    if method == 'luminosity':
+        return [[ 0.21*pixel[0] + 0.72*pixel[1] + 0.07*pixel[2] for pixel in row] for row in pixel_matrix]
 
 # characters in the increasing order of their brightness on the screen
 def get_mapped_char(intensity):
@@ -46,7 +50,7 @@ im = resize_image(im)
 print('Image size: {} x {} '.format(im.width, im.height))
 
 im_mat = get_image_matrix(im)
-intensity_mat = get_intensity_matrix(im_mat)
+intensity_mat = get_intensity_matrix(im_mat, 'luminosity')
 ascii_mat = get_character_matrix(intensity_mat)
 display_ascii_image(ascii_mat)
 
