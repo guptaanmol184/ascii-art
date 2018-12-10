@@ -32,6 +32,14 @@ def get_mapped_char(intensity):
 def get_character_matrix(intensity_matrix):
     return [[get_mapped_char(intensity_val) for intensity_val in row] for row in intensity_matrix ]
 
+def display_ascii_image(ascii_image_matrix):
+    f = lambda x: x*3
+    print(*[''.join([f(ascii_char) for ascii_char in row]) for row in ascii_image_matrix], sep='\n')
+    #for row in ascii_mat:
+    #    for char in row:
+    #        print(char*3, end='')
+    #    print()
+
 im = Image.open(sys.argv[1])
 print('Image successfully loaded.')
 im = resize_image(im)
@@ -40,8 +48,5 @@ print('Image size: {} x {} '.format(im.width, im.height))
 im_mat = get_image_matrix(im)
 intensity_mat = get_intensity_matrix(im_mat)
 ascii_mat = get_character_matrix(intensity_mat)
+display_ascii_image(ascii_mat)
 
-for row in ascii_mat:
-    for char in row:
-        print(char*3, end='')
-    print()
