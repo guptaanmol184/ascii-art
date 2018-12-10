@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from PIL import Image
+from colorama import Fore, Back, Style, init
 import sys
 
 # resize to the size i want
@@ -36,21 +37,43 @@ def get_mapped_char(intensity):
 def get_character_matrix(intensity_matrix):
     return [[get_mapped_char(intensity_val) for intensity_val in row] for row in intensity_matrix ]
 
-def display_ascii_image(ascii_image_matrix):
+# COLORAMA AVAILABLE OPTIONS
+# Fore: BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE, RESET.
+# Back: BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE, RESET.
+# Style: DIM, NORMAL, BRIGHT, RESET_ALL
+def display_ascii_image(ascii_image_matrix, fgcolor='white'):
+    if fgcolor == 'white':
+        colorstr = Fore.WHITE
+    if fgcolor == 'green':
+        colorstr = Fore.GREEN
+    if fgcolor == 'red':
+        colorstr = Fore.RED
+    if fgcolor == 'blue':
+        colorstr = Fore.BLUE
+
     f = lambda x: x*3
-    print(*[''.join([f(ascii_char) for ascii_char in row]) for row in ascii_image_matrix], sep='\n')
+    # sorry for the cryptic print
+    print(*[ colorstr + ''.join([f(ascii_char) for ascii_char in row]) for row in ascii_image_matrix], sep='\n')
+    # return terminal to normal state
+    print(Style.RESET_ALL)
+
     #for row in ascii_mat:
     #    for char in row:
     #        print(char*3, end='')
     #    print()
 
-im = Image.open(sys.argv[1])
-print('Image successfully loaded.')
-im = resize_image(im)
-print('Image size: {} x {} '.format(im.width, im.height))
+def main():
+    init()
+    im = Image.open(sys.argv[1])
+    print('Image successfully loaded.')
+    im = resize_image(im)
+    print('Image size: {} x {} '.format(im.width, im.height))
 
-im_mat = get_image_matrix(im)
-intensity_mat = get_intensity_matrix(im_mat, 'luminosity')
-ascii_mat = get_character_matrix(intensity_mat)
-display_ascii_image(ascii_mat)
+    # processing
+    im_mat = get_image_matrix(im)
+    intensity_mat = get_intensity_matrix(im_mat, 'luminosity')
+    ascii_mat = get_character_matrix(intensity_mat)
+    display_ascii_image(ascii_mat, 'green')
 
+if __name__ == '__main__':
+    main()
