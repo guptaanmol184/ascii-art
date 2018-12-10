@@ -66,7 +66,7 @@ def display_ascii_image(ascii_image_matrix, fgcolor='white'):
 
 def main():
     # set up max size
-    if not(os.environ['LINES'] and os.environ['COLUMNS']):
+    if not('LINES' in os.environ or 'COLUMNS' in os.environ):
         # cannot get lines and columns, define default
         print('export LINES and COLUMNS environment variables before running this script if possible,'+
                 'or else we use predefined default values')
