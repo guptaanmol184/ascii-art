@@ -64,6 +64,20 @@ def display_ascii_image(ascii_image_matrix, fgcolor='white'):
     #        print(char*3, end='')
     #    print()
 
+def display_rgb_ascii_image(ascii_image_matrix, pixel_matrix, tint=False):
+    colorstr = ''
+    color_opts = [ Fore.RED, Fore.GREEN, Fore.BLUE ]
+
+    for char_row, pixel_row in zip(ascii_image_matrix, pixel_matrix):
+        for char, pixel in zip(char_row, pixel_row):
+            max_index = pixel.index(max(pixel))
+            colorstr = color_opts[max_index]
+            print(colorstr, char*3, end='', sep='')
+        print()
+
+    # return terminal to normal state
+    print(Style.RESET_ALL)
+
 def main():
     # set up max size
     if not('LINES' in os.environ or 'COLUMNS' in os.environ):
@@ -86,7 +100,8 @@ def main():
     im_mat = get_image_matrix(im)
     intensity_mat = get_intensity_matrix(im_mat, 'luminosity')
     ascii_mat = get_character_matrix(intensity_mat)
-    display_ascii_image(ascii_mat, 'green')
+    #display_ascii_image(ascii_mat, 'green')
+    display_rgb_ascii_image(ascii_mat, im_mat)
 
 if __name__ == '__main__':
     init() # initialize colorama
