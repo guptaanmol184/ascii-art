@@ -110,14 +110,11 @@ def main():
             default='average', help='Choose the filter to use.' )
     parser.add_argument('-c', '--color', choices=['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white', 'rgb'],
             default='white', help='Choose the color of the output.' )
+    parser.add_argument('-i', '--invert', action="store_true", help='Invert the image. Make more bright areas less bright and less, more.' )
     parser.add_argument('-t', '--threshold', type=restricted_float, default=0.0, 
             help= 'Use this argument with color=\'rgb\' to control only hilighted pixels. Threshold is a float between 0 to 1.\nSet threshold as 1 to color with the dominating color. Default: 0.0.')
 
     args = parser.parse_args()
-    print(args.image)
-    print(args.filter)
-    print(args.color)
-    print(args.threshold)
 
     # set up max size
     if not('LINES' in os.environ or 'COLUMNS' in os.environ):
@@ -138,7 +135,7 @@ def main():
 
     # processing
     im_mat = get_image_matrix(im)
-    intensity_mat = get_intensity_matrix(im_mat, args.filter)
+    intensity_mat = get_intensity_matrix(im_mat, args.filter, args.invert)
     ascii_mat = get_character_matrix(intensity_mat)
     if args.color == 'rgb':
         display_rgb_ascii_image(ascii_mat, im_mat, args.threshold)
