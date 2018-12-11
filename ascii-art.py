@@ -129,13 +129,12 @@ def main():
     #     lines = int(os.environ['LINES'])
 
     # this should work most of the time
-    columns = int(subprocess.run(["tput", "cols"], capture_output=True, text=True).stdout.strip())
-    lines = int(subprocess.run(["tput", "lines"], capture_output=True, text=True).stdout.strip())
+    lines, columns = map(int, subprocess.run(["stty", "size"], capture_output=True, text=True).stdout.strip().split())
 
     im = Image.open(args.image)
     print('Image successfully loaded.')
     im = resize_image(im, columns, lines)
-    print('Image size are resize: {} x {} '.format(im.width, im.height))
+    print('Image size after resize: {} x {} '.format(im.width, im.height))
 
     # processing
     im_mat = get_image_matrix(im)
