@@ -4,6 +4,7 @@ from PIL import Image
 from colorama import Fore, Back, Style, init
 import os
 import argparse
+import subprocess
 
 # resize to the size i want
 def resize_image(im, max_width, max_height):
@@ -115,17 +116,21 @@ def main():
 
     args = parser.parse_args()
 
-    # set up max size
-    if not('LINES' in os.environ or 'COLUMNS' in os.environ):
-        # cannot get lines and columns, define default
-        print('export LINES and COLUMNS environment variables before running this script if possible,'+
-                'or else we use predefined default values')
-        columns = 680
-        lines = 105
-    else:
-        print('Got values from env, lines:', os.environ['LINES'], ' columns:', os.environ['COLUMNS'])
-        columns = int(os.environ['COLUMNS'])
-        lines = int(os.environ['LINES'])
+    # query terminal capabilities to set up max_height and max_width of the image
+    # if not('LINES' in os.environ or 'COLUMNS' in os.environ):
+    #     # cannot get lines and columns, define default
+    #     print('export LINES and COLUMNS environment variables before running this script if possible,'+
+    #             'or else we use predefined default values')
+    #     columns = 680
+    #     lines = 105
+    # else:
+    #     print('Got values from env, lines:', os.environ['LINES'], ' columns:', os.environ['COLUMNS'])
+    #     columns = int(os.environ['COLUMNS'])
+    #     lines = int(os.environ['LINES'])
+
+    # this should work most of the time
+    columns = int(subprocess.run(["tput", "cols"], capture_output=True, text=True).stdout.strip())
+    lines = int(subprocess.run(["tput", "lines"], capture_output=True, text=True).stdout.strip())
 
     im = Image.open(args.image)
     print('Image successfully loaded.')
