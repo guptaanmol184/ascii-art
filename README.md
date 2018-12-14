@@ -34,3 +34,6 @@ optional arguments:
 
 ```
 
+#### Example
+![fox](https://raw.githubusercontent.com/guptaanmol184/ascii-art/master/fox.jpg "Fox")
+![ascii-fox](https://raw.githubusercontent.com/guptaanmol184/ascii-art/master/ascii-fox.png "ASCII Fox")
